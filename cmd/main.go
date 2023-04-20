@@ -11,7 +11,7 @@ import (
 	"os"
 	"time"
 
-	taipower "taipower"
+	taipower "github.com/MinFengLin/goTaipower/taipower"
 
 	bot "github.com/MinFengLin/goTaipower/bot"
 	"github.com/joho/godotenv"
