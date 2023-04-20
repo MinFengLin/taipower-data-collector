@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func taipower_parser() Taipower_j {
+func (tai *Taipower_data) taipower_parser() {
 	res, err := http.Get("https://www.taipower.com.tw/d006/loadGraph/loadGraph/data/loadpara.json")
 	if err != nil {
 		log.Fatal(err)
@@ -21,44 +21,56 @@ func taipower_parser() Taipower_j {
 		log.Fatal(err)
 	}
 
-	data := Taipower_j{}
-	if err := json.Unmarshal(taipower_jsonData, &data); err != nil {
+	if err := json.Unmarshal(taipower_jsonData, &tai); err != nil {
 		fmt.Printf("failed to unmarshal json file, error: %v", err)
 	}
-
-	return data
 }
 
-func Taipower_res(more_info bool) string {
-	data := taipower_parser()
+func (tai *Taipower_data) taipower_fore_peak_resv_indicator() string {
 	var text = "今日電力資訊 "
 
-	switch data.Records[1].ForePeakResvIndicator {
-	case "G":
-		text = text + " *🟢 供電充裕* - ( " + data.Records[1].PublishTime + " 更新 )\n\n"
+	switch tai.Records[1].ForePeakResvIndicator {
 	case "Y":
-		text = text + " *🟡 供電吃緊* - ( " + data.Records[1].PublishTime + " 更新 )\n\n"
+		text = text + " *🟡 供電吃緊* - ( " + tai.Records[1].PublishTime + " 更新 )\n\n"
 	case "O":
-		text = text + " *🟠 供電警戒* - ( " + data.Records[1].PublishTime + " 更新 )\n\n"
+		text = text + " *🟠 供電警戒* - ( " + tai.Records[1].PublishTime + " 更新 )\n\n"
 	case "R":
-		text = text + " *🔴 限電警戒* - ( " + data.Records[1].PublishTime + " 更新 )\n\n"
+		text = text + " *🔴 限電警戒* - ( " + tai.Records[1].PublishTime + " 更新 )\n\n"
 	case "B":
-		text = text + " *⚫️ 限電準備* - ( " + data.Records[1].PublishTime + " 更新 )\n\n"
+		text = text + " *⚫️ 限電準備* - ( " + tai.Records[1].PublishTime + " 更新 )\n\n"
 	default:
-	}
-	if more_info {
-		fore_peak_dema_load, _ := strconv.ParseFloat(data.Records[1].ForePeakDemaLoad, 2)
-		fore_maxi_sply_capacity, _ := strconv.ParseFloat(data.Records[1].ForeMaxiSplyCapacity, 2)
-		text += "目前用電量： " + data.Records[0].CurrLoad + " 萬瓩\n" +
-			"目前供電能力： " + data.Records[3].RealHrMaxiSplyCapacity + " 萬瓩\n" +
-			"目前使用率： " + data.Records[0].CurrUtilRate + "%\n" +
-			"尖峰使用率： " + strconv.Itoa(int(fore_peak_dema_load)*100/int(fore_maxi_sply_capacity)) + "%\n" +
-			"預估最高用電： " + data.Records[1].ForePeakDemaLoad + " 萬瓩\n" +
-			"預估最高用電時段：" + data.Records[1].ForePeakHourRange + "\n" +
-			"預估最大供電能力： " + data.Records[1].ForeMaxiSplyCapacity + " 萬瓩\n" +
-			"預估尖峰備轉容量率： " + data.Records[1].ForePeakResvRate + "%\n" +
-			"預估尖峰備轉容量： " + data.Records[1].ForePeakResvCapacity + " 萬瓩\n"
+		text = text + " *🟢 供電充裕* - ( " + tai.Records[1].PublishTime + " 更新 )\n\n"
 	}
 
 	return text
+}
+
+func (tai *Taipower_data) taipower_more_info() string {
+	fore_peak_dema_load, _ := strconv.ParseFloat(tai.Records[1].ForePeakDemaLoad, 2)
+	fore_maxi_sply_capacity, _ := strconv.ParseFloat(tai.Records[1].ForeMaxiSplyCapacity, 2)
+	text := "目前用電量： " + tai.Records[0].CurrLoad + " 萬瓩\n" +
+		"目前供電能力： " + tai.Records[3].RealHrMaxiSplyCapacity + " 萬瓩\n" +
+		"目前使用率： " + tai.Records[0].CurrUtilRate + "%\n" +
+		"尖峰使用率： " + strconv.Itoa(int(fore_peak_dema_load)*100/int(fore_maxi_sply_capacity)) + "%\n" +
+		"預估最高用電： " + tai.Records[1].ForePeakDemaLoad + " 萬瓩\n" +
+		"預估最高用電時段：" + tai.Records[1].ForePeakHourRange + "\n" +
+		"預估最大供電能力： " + tai.Records[1].ForeMaxiSplyCapacity + " 萬瓩\n" +
+		"預估尖峰備轉容量率： " + tai.Records[1].ForePeakResvRate + "%\n" +
+		"預估尖峰備轉容量： " + tai.Records[1].ForePeakResvCapacity + " 萬瓩\n"
+
+	return text
+}
+
+func Parser_Taipower(more_info *bool) string {
+	var taipower = &Taipower_data{}
+	var res = ""
+	taipower.taipower_parser()
+
+	if *more_info {
+		res = taipower.taipower_fore_peak_resv_indicator() + taipower.taipower_more_info()
+	} else {
+		res = taipower.taipower_fore_peak_resv_indicator()
+	}
+
+	return res
 }

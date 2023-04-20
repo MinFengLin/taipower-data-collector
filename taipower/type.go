@@ -1,6 +1,6 @@
 package taipower
 
-type Taipower_j struct {
+type Taipower_data struct {
 	Success string `json:"success"`
 	Result  struct {
 		ResourceID string `json:"resource_id"`
