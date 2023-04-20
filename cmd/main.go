@@ -25,8 +25,9 @@ func main() {
 	}
 
 	chat_id, _ := strconv.ParseInt(os.Getenv("CHAT_ID"), 10, 64)
-	more_info, _ := strconv.ParseBool(os.Getenv("MORE_INFO"))
 	Token := os.Getenv("TOKEN")
+
+	more_info, _ := strconv.ParseBool(os.Getenv("MORE_INFO"))
 	Env_Time, _ := strconv.ParseInt(os.Getenv("Timer_Minutes"), 10, 64)
 	crontab_time := os.Getenv("Crontime")
 
