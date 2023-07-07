@@ -11,9 +11,9 @@ import (
 	"os"
 	"time"
 
-	taipower "github.com/MinFengLin/goTaipower/taipower"
+	taipower "github.com/MinFengLin/taipower_tgbot/taipower"
 
-	bot "github.com/MinFengLin/goTaipower/bot"
+	bot "github.com/MinFengLin/taipower_tgbot/bot"
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
 )
